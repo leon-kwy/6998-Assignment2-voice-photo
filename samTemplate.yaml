@@ -7,7 +7,7 @@ Resources:
     Properties:
       FunctionName: LFX
       Handler: lambda_function.lambda_handler
-      Runtime: python3.6
+      Runtime: python3.8
       CodeUri: ./LambdaCode
       Description: 'Lambda function for CD Demo'
       MemorySize: 128
