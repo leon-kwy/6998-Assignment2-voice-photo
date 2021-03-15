@@ -7,7 +7,7 @@ Resources:
       Properties:
       BucketName: bucketforas2
       Events:
-        getAZsAPI:
+        putAZsAPI:
           Type: Api
           Properties:
             Path: /upload
