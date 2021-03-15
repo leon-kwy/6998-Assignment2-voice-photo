@@ -2,60 +2,65 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Description: CD Demo Lambda
 Resources:
-  bucketforas2:
-      Type: AWS::S3::Bucket
-      Properties:
-      BucketName: bucketforas2
-      Events:
-        putAZsAPI:
-          Type: Api
-          Properties:
-            Path: /upload
-            Method: put
-  index-photos:
-      Type: 'AWS::Serverless::Function'
-      Properties:
-      FunctionName: index-photos
+  indexphotos:
+    Type: 'AWS::Serverless::Function'
+    Properties:
       Handler: lambda_function.lambda_handler
       Runtime: python3.8
-      CodeUri: ./lambda_functions
-      Description: 'Lambda function for CD Demo'
+      CodeUri: .
+      Description: ''
       MemorySize: 128
       Timeout: 30
       Role: 'arn:aws:iam::213660796932:role/roleforAs2_Lambda'
-      Layers:
-        -arn:aws:lambda:us-east-1:213660796932:layer:requests:4
-        -arn:aws:lambda:us-east-1:213660796932:layer:elasticsearch:4
       Events:
-        S3Trigger:
+        BucketEvent1:
           Type: S3
           Properties:
             Bucket:
-              Ref: bucketforas2
-            Events: s3:ObjectCreated:Put
-  search-photos:
-      Type: 'AWS::Serverless::Function'
-      Properties:
-      FunctionName: search-photos
+              Ref: Bucket1
+            Events:
+              - 's3:ObjectCreated:Put'
+        Schedule1:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 minute)
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-8095bb8b
+        SubnetIds:
+          - subnet-90a432f6
+      Layers:
+        - 'arn:aws:lambda:us-east-1:213660796932:layer:requests:4'
+        - 'arn:aws:lambda:us-east-1:213660796932:layer:elasticsearch:4'
+  Bucket1:
+    Type: 'AWS::S3::Bucket'
+  searchphotos:
+    Type: 'AWS::Serverless::Function'
+    Properties:
       Handler: lambda_function.lambda_handler
       Runtime: python3.8
-      CodeUri: ./lambda_functions
-      Description: 'Lambda function for CD Demo'
+      CodeUri: .
+      Description: ''
       MemorySize: 128
-      Timeout: 30
+      Timeout: 3
       Role: 'arn:aws:iam::213660796932:role/roleforAs2_Lambda'
-      Environment:
-        Variables:
-          REGION: us-east-1
-      Layers:
-        -arn:aws:lambda:us-east-1:213660796932:layer:requests:4
-        -arn:aws:lambda:us-east-1:213660796932:layer:elasticsearch:4
       Events:
-        getAZsAPI:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /MyResource
+            Method: ANY
+        Api2:
           Type: Api
           Properties:
             Path: /search
-            Method: get
-     Environment:
-        Variables:
-          REGION: us-east-1
+            Method: GET
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-8095bb8b
+        SubnetIds:
+          - subnet-90a432f6
+          - subnet-ff61bbce
+      Layers:
+        - 'arn:aws:lambda:us-east-1:213660796932:layer:elasticsearch:4'
+        - 'arn:aws:lambda:us-east-1:213660796932:layer:requests:4'
